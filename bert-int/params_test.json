@@ -1,0 +1,8 @@
+{
+  "margin_basic": [1, 3, 5],
+  "lr_basic": [1e-6, 1e-5],
+  "neg_num_basic": [1, 2, 5],
+  "margin_interaction": [1, 3, 5],
+  "lr_interaction": [5e-5, 5e-4, 5e-3],
+  "neg_num_interaction": [3, 5, 10]
+}
