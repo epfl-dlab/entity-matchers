@@ -374,22 +374,94 @@ class RDGCN(BasicModel):
                                                          allow_soft_placement=True, log_device_placement=False))
         self.sess.run(self.model_init)
 
+    def get_priorities(self, dataset):
+        priority1 = {}
+        priority2 = {}
+        if "EN_JA" in dataset:
+            priority1 = {"http://xmlns.com/foaf/0.1/name": 0, "http://dbpedia.org/ontology/birthName": 1,
+                        "http://xmlns.com/foaf/0.1/nick": 2, "http://dbpedia.org/ontology/synonym": 3,
+                        "http://dbpedia.org/ontology/alias": 4, "http://dbpedia.org/ontology/office": 5,
+                        "http://dbpedia.org/ontology/background": 5, "http://dbpedia.org/ontology/leaderTitle": 5,
+                        "http://dbpedia.org/ontology/orderInOffice": 5}
+            priority2 = {"http://xmlns.com/foaf/0.1/name": 0, "http://dbpedia.org/ontology/title": 1,
+                        "http://dbpedia.org/ontology/commonName": 2, "http://xmlns.com/foaf/0.1/nick": 3,
+                        "http://dbpedia.org/ontology/givenName": 4, "http://dbpedia.org/ontology/alias": 5,
+                        "http://dbpedia.org/ontology/background": 6, "http://dbpedia.org/ontology/purpose": 6}
+        elif "EN_DE" in dataset:
+            priority1 = {"http://xmlns.com/foaf/0.1/name": 0, "http://dbpedia.org/ontology/title": 1,
+                        "http://dbpedia.org/ontology/birthName": 2, "http://xmlns.com/foaf/0.1/nick": 3,
+                        "http://dbpedia.org/ontology/office": 4, "http://dbpedia.org/ontology/leaderTitle": 5,
+                        "http://dbpedia.org/ontology/orderInOffice": 5}
+            priority2 = {"http://xmlns.com/foaf/0.1/name": 0, "http://dbpedia.org/ontology/originalTitle": 1,
+                        "http://xmlns.com/foaf/0.1/nick": 2, "http://dbpedia.org/ontology/motto": 3,
+                        "http://dbpedia.org/ontology/leaderTitle": 4}
+        elif "EN_FR" in dataset:
+            priority1 = {"http://xmlns.com/foaf/0.1/name": 0, "http://dbpedia.org/ontology/title": 1,
+                        "http://dbpedia.org/ontology/birthName": 2, "http://xmlns.com/foaf/0.1/nick": 3,
+                        "http://dbpedia.org/ontology/office": 4, "http://dbpedia.org/ontology/leaderTitle": 5,
+                        "http://dbpedia.org/ontology/motto": 5, "http://dbpedia.org/ontology/combatant": 5}
+            priority2 = {"http://xmlns.com/foaf/0.1/name": 0, "http://dbpedia.org/ontology/birthName": 1,
+                        "http://xmlns.com/foaf/0.1/nick": 2, "http://dbpedia.org/ontology/peopleName": 3,
+                        "http://dbpedia.org/ontology/thumbnailCaption": 4, "http://dbpedia.org/ontology/flag": 4,
+                        "http://dbpedia.org/ontology/motto": 5, "http://dbpedia.org/ontology/title": 5}
+        elif "DBP_en_YG_en" in dataset:
+            priority1 = {"http://xmlns.com/foaf/0.1/name": 0, "http://dbpedia.org/ontology/birthName": 1,
+                        "http://xmlns.com/foaf/0.1/nick": 2, "http://dbpedia.org/ontology/alias": 3,
+                        "http://dbpedia.org/ontology/office": 4, "http://dbpedia.org/ontology/leaderTitle": 4,
+                        "http://dbpedia.org/ontology/motto": 5, "http://dbpedia.org/ontology/combatant": 5}
+            priority2 = {"skos:prefLabel": 0, "rdfs:label": 1,
+                        "redirectedFrom": 2, "hasFamilyName": 3,
+                        "hasGivenName": 4, "hasMotto": 5}
+        elif "DBP_en_WD_en" in dataset:
+            priority1 = {"http://xmlns.com/foaf/0.1/name": 0, "http://dbpedia.org/ontology/birthName": 1,
+                        "http://dbpedia.org/ontology/title": 2, "http://xmlns.com/foaf/0.1/nick": 3,
+                        "http://dbpedia.org/ontology/synonym": 4, "http://dbpedia.org/ontology/leaderTitle": 4,
+                        "http://dbpedia.org/ontology/motto": 5, "http://dbpedia.org/ontology/office": 5}
+            priority2 = {"http://www.w3.org/2000/01/rdf-schema#label": 0, "http://schema.org/name": 1,
+                        "http://www.w3.org/2004/02/skos/core#prefLabel": 2,
+                        "http://www.wikidata.org/prop/direct/P373": 3,
+                        "http://www.w3.org/2004/02/skos/core#altLabel": 4, "http://schema.org/description": 5,
+                        "http://www.wikidata.org/prop/direct/P1549": 6}
+        elif "D_W" in dataset:
+            priority1 = {"http://xmlns.com/foaf/0.1/name": 0, "http://dbpedia.org/ontology/birthName": 1,
+                        "http://purl.org/dc/elements/1.1/description": 2, "http://xmlns.com/foaf/0.1/nick": 3,
+                        "http://xmlns.com/foaf/0.1/givenName": 4, "http://dbpedia.org/ontology/leaderTitle": 5,
+                        "http://dbpedia.org/ontology/alias": 6,
+                        "http://dbpedia.org/ontology/motto": 7, "http://dbpedia.org/ontology/office": 7}
+            priority2 = {"http://www.wikidata.org/entity/P373": 0, "http://schema.org/description": 1,
+                        "http://www.wikidata.org/entity/P1476": 2,
+                        "http://www.wikidata.org/entity/P935": 3,
+                        "http://www.w3.org/2004/02/skos/core#altLabel": 4}
+        elif "D_Y" in dataset:
+            priority1 = {"http://xmlns.com/foaf/0.1/name": 0, "http://dbpedia.org/ontology/birthName": 1,
+                        "http://purl.org/dc/elements/1.1/description": 2, "http://xmlns.com/foaf/0.1/nick": 3,
+                        "http://xmlns.com/foaf/0.1/givenName": 4, "http://dbpedia.org/ontology/leaderTitle": 5,
+                        "http://dbpedia.org/ontology/alias": 6,
+                        "http://dbpedia.org/ontology/motto": 7, "http://dbpedia.org/ontology/office": 7}
+            priority2 = {"skos:prefLabel": 0,
+                        "redirectedFrom": 1, "hasFamilyName": 2,
+                        "hasGivenName": 3, "hasMotto": 4}
+        return priority1, priority2
+
     def _get_local_name_by_name_triple(self, name_attribute_list=None):
         # It is the name of the label for the given datasets
-        if name_attribute_list is None:
-            if 'D_Y' in self.args.training_data:
-                name_attribute_list = {'skos:prefLabel', 'http://dbpedia.org/ontology/birthName'}
-            elif 'D_W' in self.args.training_data:
-                name_attribute_list = {'http://www.wikidata.org/entity/P373', 'http://www.wikidata.org/entity/P1476'}
-            elif 'DBP_en_YG' in self.args.training_data:
-                name_attribute_list = {'http://dbpedia.org/ontology/birthName', 'skos:prefLabel'}
-            elif 'DBP_en_WD' in self.args.training_data and 'NO_EXTRA' not in self.args.training_data:
-                name_attribute_list = {'http://dbpedia.org/ontology/birthName', 'http://www.w3.org/2004/02/skos/core#prefLabel'}
-            elif 'DBP_en_WD' in self.args.training_data and 'NO_EXTRA' in self.args.training_data:
-                name_attribute_list = {'http://www.wikidata.org/prop/direct/P373', 'http://www.wikidata.org/prop/direct/P1476'}
-            else:
-                name_attribute_list = {}
-
+        # if name_attribute_list is None:
+        #     if 'D_Y' in self.args.training_data:
+        #         name_attribute_list = {'skos:prefLabel', 'http://dbpedia.org/ontology/birthName'}
+        #     elif 'D_W' in self.args.training_data:
+        #         name_attribute_list = {'http://www.wikidata.org/entity/P373', 'http://www.wikidata.org/entity/P1476'}
+        #     elif 'DBP_en_YG' in self.args.training_data:
+        #         name_attribute_list = {'http://dbpedia.org/ontology/birthName', 'skos:prefLabel'}
+        #     elif 'DBP_en_WD' in self.args.training_data and 'NO_EXTRA' not in self.args.training_data:
+        #         name_attribute_list = {'http://dbpedia.org/ontology/birthName', 'http://www.w3.org/2004/02/skos/core#prefLabel'}
+        #     elif 'DBP_en_WD' in self.args.training_data and 'NO_EXTRA' in self.args.training_data:
+        #         name_attribute_list = {'http://www.wikidata.org/prop/direct/P373', 'http://www.wikidata.org/prop/direct/P1476'}
+        #     elif 'EN_JA' in self.args.training_data:
+        #         name_attribute_list = {'http://xmlns.com/foaf/0.1/name',
+        #                                'http://ja.dbpedia.org/property/name', 'http://dbpedia.org/property/name'}
+        #     else:
+        #         name_attribute_list = {}
+        priority1, priority2 = self.get_priorities(self.args.training_data)
         local_triples = self.kgs.kg1.local_attribute_triples_set | self.kgs.kg2.local_attribute_triples_set
         triples = list()
         # Create a new triples list, removing from the v (tail) elements both " and @eng
@@ -408,32 +480,57 @@ class RDGCN(BasicModel):
             id_ent_dict[e_id] = e
 
         # Create a set with the ids of the attributes that are considered as names (like birthName)
-        name_ids = set()
+        # name_ids = set()
+        # for a, a_id in self.kgs.kg1.attributes_id_dict.items():
+        #     if a in name_attribute_list:
+        #         name_ids.add(a_id)
+        # for a, a_id in self.kgs.kg2.attributes_id_dict.items():
+        #     if a in name_attribute_list:
+        #         name_ids.add(a_id)
+
+        priority1_ids, priority2_ids = {}, {}
         for a, a_id in self.kgs.kg1.attributes_id_dict.items():
-            if a in name_attribute_list:
-                name_ids.add(a_id)
+            if a in priority1:
+                priority1_ids[a_id] = priority1[a]
+                print("Found attribute {} with priority {}".format(a, priority1[a]))
         for a, a_id in self.kgs.kg2.attributes_id_dict.items():
-            if a in name_attribute_list:
-                name_ids.add(a_id)
+            if a in priority2:
+                priority2_ids[a_id] = priority2[a]
+                print("Found attribute {} with priority {}".format(a, priority2[a]))
+        priority_ids = {}
+        priority_ids.update(priority1_ids)
+        priority_ids.update(priority2_ids)
 
         # Just some print. Maybe it is better to check the output of these.
-        for a, a_id in self.kgs.kg1.attributes_id_dict.items():
-            if a_id in name_ids:
-                print(a)
-        for a, a_id in self.kgs.kg2.attributes_id_dict.items():
-            if a_id in name_ids:
-                print(a)
+        # for a, a_id in self.kgs.kg1.attributes_id_dict.items():
+        #     if a_id in name_ids:
+        #         print(a)
+        # for a, a_id in self.kgs.kg2.attributes_id_dict.items():
+        #     if a_id in name_ids:
+        #         print(a)
+
         # Among all triples, take as names the ones with the attributes that can be considered as a name.
         local_name_dict = {}
         ents = self.kgs.kg1.entities_set | self.kgs.kg2.entities_set
+        # for (e, a, v) in triples:
+        #     if a in name_ids:
+        #         local_name_dict[e] = v
         for (e, a, v) in triples:
-            if a in name_ids:
-                local_name_dict[e] = v
+            if a in priority_ids:
+                if e in local_name_dict:
+                    if priority_ids[a] < priority_ids[local_name_dict[e][0]]:
+                        local_name_dict[e] = (a, v)
+                else:
+                    local_name_dict[e] = (a, v)
+        local_name_dict = {e: v for e, (_, v) in local_name_dict.items()}
         # If some entities still do not have a name (because there is no attribute of type name which is linked to them)
         # then create some fictional representative names (like from "wiki://.../Barack_Obama" -> "Barack Obama")
+        count_out = 0
         for e in ents:
             if e not in local_name_dict:
+                count_out+=1
                 local_name_dict[e] = id_ent_dict[e].split('/')[-1].replace('_', ' ')
+        print("There are {} entities that are using the id instead of an attribute".format(count_out))
         name_triples = list()
         # Create some triples with entity, -1, name. -1 should be a "null attribute id"
         for e, n in local_name_dict.items():

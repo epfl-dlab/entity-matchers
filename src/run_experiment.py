@@ -4,6 +4,7 @@ from utils import *
 import numpy as np
 import json
 import copy
+import pickle
 
 
 def run_paris_experiment(root_dataset, dataset, dataset_division, out_folder):
@@ -52,7 +53,8 @@ def run_paris_experiment(root_dataset, dataset, dataset_division, out_folder):
     print("Test times:\n\tavg: {}\n\tstd: {}".format(test_times.mean(), test_times.std()))
 
 
-def run_embedding_experiment(root_dataset, args, out_folder, dataset, dataset_division, gpu, method, main_embeds):
+def run_embedding_experiment(root_dataset, args, out_folder, dataset, dataset_division,
+                             gpu, method, main_embeds, dict_path):
     precisions_no_csls = []
     precisions_csls = []
     recalls_no_csls = []
@@ -64,27 +66,43 @@ def run_embedding_experiment(root_dataset, args, out_folder, dataset, dataset_di
 
     dataset_in = root_dataset + "/" + dataset + "/"
     for fold in os.listdir(dataset_in + dataset_division):
-        # Read the json file with the configuration, and substitute temporarily the dataset location
-        with open(args) as json_file:
-            json_data = json.load(json_file)
-            old_json_data = copy.deepcopy(json_data)
-
-        json_data['training_data'] = root_dataset + '/'
-        json_data['output'] = out_folder + '/'
-
-        # Re-write the json with the correct information
-        with open(args, 'w') as outfile:
-            json.dump(json_data, outfile)
         current_time = time.localtime()
-        log_file = out_folder + '/' + "args_{}_{}_{}_{}_{}_{}_{}.log".format(method,
-                                                                             dataset,
-                                                                             current_time.tm_mon,
-                                                                             current_time.tm_mday,
-                                                                             current_time.tm_hour,
-                                                                             current_time.tm_min,
-                                                                             current_time.tm_sec)
-        command = "python3 -u {} {} {} {} {} > {}" \
-            .format(main_embeds, args, dataset, dataset_division + '/' + fold + '/', gpu, log_file)
+        log_file = out_folder + '/' + "{}_{}_{}_{}_{}_{}_{}.log".format(method,
+                                                                        dataset,
+                                                                        current_time.tm_mon,
+                                                                        current_time.tm_mday,
+                                                                        current_time.tm_hour,
+                                                                        current_time.tm_min,
+                                                                        current_time.tm_sec)
+        # Read the json file with the configuration, and substitute temporarily the dataset location
+        if method == "RDGCN" or method == "BOOTEA":
+            with open(args) as json_file:
+                json_data = json.load(json_file)
+                old_json_data = copy.deepcopy(json_data)
+
+            json_data['training_data'] = root_dataset + '/'
+            json_data['output'] = out_folder + '/'
+
+            # Re-write the json with the correct information
+            with open(args, 'w') as outfile:
+                json.dump(json_data, outfile)
+            command = "python3 -u {} {} {} {} {} > {}" \
+                .format(main_embeds, args, dataset, dataset_division + '/' + fold + '/', gpu, log_file)
+        else:
+            with open(args, "rb") as pkl_file:
+                dict_args = pickle.load(pkl_file)
+            if method == "TRANSEDGE":
+                dataset_param = "--data_dir"
+            else:
+                dataset_param = "--dataset"
+            command = "python3 -u {} {} {} --fold_folder {} --gpu {} " \
+                .format(main_embeds, dataset_param, root_dataset + "/" + dataset,
+                        dataset_division + '/' + fold + '/', gpu)
+            if dict_path is not None:
+                command += "--dict_path {} ".format(dict_path)
+            for (param, val) in dict_args.items():
+                command += "--{} {} ".format(param, val)
+            command += "> {}".format(log_file)
         os.system(command)
 
         # Read the statistics: both with csls and without csls
@@ -101,9 +119,10 @@ def run_embedding_experiment(root_dataset, args, out_folder, dataset, dataset_di
         list_train_times.append(train_time_seconds)
         list_test_times.append(test_time_seconds)
 
-        # Restore the old json file.
-        with open(args, 'w') as outfile:
-            json.dump(old_json_data, outfile)
+        if method == "RDGCN" or method == "BOOTEA":
+            # Restore the old json file.
+            with open(args, 'w') as outfile:
+                json.dump(old_json_data, outfile)
     precisions_no_csls = np.array(precisions_no_csls)
     precisions_csls = np.array(precisions_csls)
     recalls_no_csls = np.array(recalls_no_csls)
@@ -125,24 +144,27 @@ def run_embedding_experiment(root_dataset, args, out_folder, dataset, dataset_di
     print("precisions no csls:\n\tavg: {}\n\tstd: {}".format(precisions_no_csls.mean(), precisions_no_csls.std()))
     print("recalls no csls:\n\tavg: {}\n\tstd: {}".format(recalls_no_csls.mean(), recalls_no_csls.std()))
     print("f1s no csls:\n\tavg: {}\n\tstd: {}".format(f1s_no_csls.mean(), f1s_no_csls.std()))
-    print("precisions csls:\n\tavg: {}\n\tstd: {}".format(precisions_csls.mean(), precisions_csls.std()))
-    print("recalls csls:\n\tavg: {}\n\tstd: {}".format(recalls_csls.mean(), recalls_csls.std()))
-    print("f1s csls:\n\tavg: {}\n\tstd: {}".format(f1s_csls.mean(), f1s_csls.std()))
+    if method != "BERT-INT":
+        print("precisions csls:\n\tavg: {}\n\tstd: {}".format(precisions_csls.mean(), precisions_csls.std()))
+        print("recalls csls:\n\tavg: {}\n\tstd: {}".format(recalls_csls.mean(), recalls_csls.std()))
+        print("f1s csls:\n\tavg: {}\n\tstd: {}".format(f1s_csls.mean(), f1s_csls.std()))
     print("Train times:\n\tavg: {}\n\tstd: {}".format(list_train_times.mean(), list_train_times.std()))
     print("Test times:\n\tavg: {}\n\tstd: {}".format(list_test_times.mean(), list_test_times.std()))
 
 
-def run_exps(method, args, root_dataset, dataset, dataset_division, gpu, out_folder, main_embeds):
+def run_exps(method, args, root_dataset, dataset, dataset_division, gpu, out_folder, main_embeds, dict_path):
     if method == "PARIS":
         run_paris_experiment(root_dataset, dataset, dataset_division, out_folder)
 
-    elif method == 'RDGCN' or method == 'BOOTEA':
-        run_embedding_experiment(root_dataset, args, out_folder, dataset, dataset_division, gpu, method, main_embeds)
+    elif method in ["RDGCN", "BOOTEA", "TRANSEDGE", "BERT-INT"]:
+        run_embedding_experiment(root_dataset, args, out_folder, dataset, dataset_division, gpu,
+                                 method, main_embeds, dict_path)
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run one experiment with a given dataset")
-    parser.add_argument("--method", help="Method to use", choices=["PARIS", "RDGCN", "BOOTEA"], type=str)
+    parser.add_argument("--method", help="Method to use", choices=["PARIS", "RDGCN", "BOOTEA", "TRANSEDGE", "BERT-INT"],
+                        type=str)
     parser.add_argument("--args", type=str, help="Path to file from where to load params (only for embeddings methods)")
     parser.add_argument("--root_dataset", type=str, help="Path to dataset root folder (no slash in the end)")
     parser.add_argument("--dataset", type=str, help="Dataset to use (no slash in the end)")
@@ -150,6 +172,8 @@ if __name__ == "__main__":
     parser.add_argument("--gpu", type=str, help="GPU to use (only for embeddings methods)")
     parser.add_argument("--out_folder", type=str, help="Root folder for output (no slash in the end)")
     parser.add_argument("--main_embeds", type=str, help="Path to main script for embeddings method")
+    parser.add_argument("--dict_path", type=str, help="Path to the dict containing the abstracts (only for BERT-INT)",
+                        default=None)
     args = parser.parse_args()
     run_exps(args.method, args.args, args.root_dataset, args.dataset,
-             args.dataset_division, args.gpu, args.out_folder, args.main_embeds)
+             args.dataset_division, args.gpu, args.out_folder, args.main_embeds, args.dict_path)

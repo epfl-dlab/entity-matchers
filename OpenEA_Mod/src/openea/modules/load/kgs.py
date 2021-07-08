@@ -34,6 +34,9 @@ class KGs:
         self.uri_kg1 = kg1
         self.uri_kg2 = kg2
 
+        self.map_ent_to_id_1 = ent_ids1
+        self.map_ent_to_id_2 = ent_ids2
+
         # rebuild kgs using ids, add dict generated before
         kg1 = KG(id_relation_triples1, id_attribute_triples1)
         kg2 = KG(id_relation_triples2, id_attribute_triples2)

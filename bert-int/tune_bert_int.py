@@ -19,7 +19,7 @@ def tuning(parameters, dataset, fold_folder, gpu, dict_path):
         for (best_param, best_val) in best_params.items():
             command_so_far = command_so_far + " --{} {}".format(best_param, best_val)
         for hyper in list_values:
-            log_file = "/dlabdata1/leone/CAAS_out/BERT-INT/args_hyper/args_BERT_INT_{}_{}_{}.log"\
+            log_file = "args_hyper/args_BERT_INT_{}_{}_{}.log"\
                 .format(dataset.split("/")[-1], param, str(hyper).replace(".", "_"))
             print("\tTesting", hyper)
             print("\tLog File:", log_file)
@@ -46,7 +46,7 @@ def tuning(parameters, dataset, fold_folder, gpu, dict_path):
         best_params[param] = best_hyper
         print("Param: {}\nBest Hyper: {}\n\tPrecision: {}\n\tRecall: {}\n\tF1: {}"
               .format(param, best_hyper, hyper_dict[best_hyper][0], hyper_dict[best_hyper][1], max_f1))
-    pickle_name = "/dlabdata1/leone/CAAS_out/BERT-INT/args_best/best_BERT_INT_{}.pkl".format(dataset.split("/")[-1])
+    pickle_name = "args_best/best_BERT_INT_{}.pkl".format(dataset.split("/")[-1])
     with open(pickle_name, "wb") as f:
         pickle.dump(best_params, f)
     print("Saved best args in", pickle_name)

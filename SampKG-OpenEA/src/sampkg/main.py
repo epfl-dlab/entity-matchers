@@ -35,7 +35,7 @@ parser.add_argument('--KG1_attr_triple_path', type=str, default=folder_input+'at
 parser.add_argument('--KG2_attr_triple_path', type=str, default=folder_input+'attr_triples/attr_triples_' + KG2)
 parser.add_argument('--ent_link_path', type=str, default=folder_input+'ent_links/ent_links_' + KG1 + '_' + KG2)
 
-parser.add_argument('--output_folder', type=str)  # Removed default option.
+parser.add_argument('--output_folder', type=str, default='/scratch/leonehuber/datasets/sampled_datasets/')
 parser.add_argument('--dataset_division', type=str, default='721')
 parser.add_argument('--draw_degree_distribution', type=bool, default=True)
 

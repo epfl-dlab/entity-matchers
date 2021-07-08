@@ -1,10 +1,10 @@
 {
-	"training_data": "",
-  	"output": "",
+	"training_data": "/scratch/leonehuber/datasets/sampled_datasets/done/correct/",
+  	"output": "/scratch/leonehuber/output/results/",
   	"dataset_division": "631",
 	"extra_entities_percentage_valid": 0.1,
 
-	"word_embed" : "",
+	"word_embed" : "/scratch/leonehuber/datasets/word_embeds/wiki-news-300d-1M.vec",
 
   	"embedding_module": "RDGCN",
   	"alignment_module": "mapping",

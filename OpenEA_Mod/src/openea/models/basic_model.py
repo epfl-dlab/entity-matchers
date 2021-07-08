@@ -1,5 +1,6 @@
 import math
 import multiprocessing as mp
+import pickle
 import random
 import time
 import gc
@@ -326,6 +327,7 @@ class BasicModel:
         align_kg1_kg2 = compute_best_alignment_one_side(embeds1, embeds2, method)
         align_kg2_kg1 = compute_best_alignment_one_side(embeds2, embeds1, method)
         aligns = compute_bidirectional_alignments(align_kg1_kg2, align_kg2_kg1, ids_1, ids_2)
+
         prec, rec, f1 = compute_prec_rec_f1(aligns, self.kgs.test_links + self.kgs.valid_links)
         print("Final test result:")
         print("\tPrecision:", prec)
@@ -341,4 +343,21 @@ class BasicModel:
         print("\tPrecision:", prec_csls)
         print("\tRecall:", rec_csls)
         print("\tF1:", f1_csls)
+        with open("{}_aligns.pkl".format(method), 'wb') as f:
+            pickle.dump({
+                "aligns": aligns,
+                "aligns_csls": aligns_csls,
+                "ids_1": ids_1,
+                "ids_2": ids_2,
+                "test_links": self.kgs.test_links + self.kgs.valid_links,
+                "test_links_uri": self.kgs.uri_test_links,
+                "train_links_uri": self.kgs.uri_train_links,
+                "map_ent_id_1": self.kgs.map_ent_to_id_1,
+                "map_ent_id_2": self.kgs.map_ent_to_id_2,
+                "precision": prec,
+                "recall": rec,
+                "f1": f1,
+                "prec_csls": prec_csls,
+                "recall_csls": rec_csls,
+                "f1_csls": f1_csls}, f)
         return

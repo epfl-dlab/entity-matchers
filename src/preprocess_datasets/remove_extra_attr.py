@@ -32,7 +32,7 @@ if __name__ == "__main__":
             (e, p, o) = l.rstrip("\n").split("\t")
             p2_openea.add(p)
 
-    if "DBP" in args.dataset:
+    if "DBP" in args.dataset and "http://purl.org/dc/elements/1.1/description" in p1_openea:
         p1_openea.remove("http://purl.org/dc/elements/1.1/description")
         p1_openea.add("http://dbpedia.org/ontology/description")
     p2_openea_new = set()

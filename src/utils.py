@@ -174,6 +174,8 @@ def evaluate_paris(paris_out_folder, dataset_folder, dataset_division, fold_num)
             (e1, e2, _) = l.split("\t")
             if "dbp:" in e1:
                 e1 = e1.replace('dbp:', 'http://dbpedia.org/')
+            if "dbp:" in e2:
+                e2 = e2.replace('dbp:', 'http://dbpedia.org/')
             if "y2:" in e2:
                 e2 = e2.replace('y2:', "")
             res_list.append((e1, e2))
@@ -225,9 +227,13 @@ def parse_stats_from_log(log_file):
     precision_no_csls = float(log_str.split("Final test result:\n\t")[-1].split("Precision: ")[1].split("\n")[0])
     recall_no_csls = float(log_str.split("Final test result:\n\t")[-1].split("Recall: ")[1].split("\n")[0])
 
-    f1_csls = float(log_str.split("Final test result with csls:\n\t")[-1].split("F1: ")[1].split("\n")[0])
-    precision_csls = float(log_str.split("Final test result with csls:\n\t")[-1].split("Precision: ")[1].split("\n")[0])
-    recall_csls = float(log_str.split("Final test result with csls:\n\t")[-1].split("Recall: ")[1].split("\n")[0])
+    if "Final test result with csls:" in log_str:
+        f1_csls = float(log_str.split("Final test result with csls:\n\t")[-1].split("F1: ")[1].split("\n")[0])
+        precision_csls = float(
+            log_str.split("Final test result with csls:\n\t")[-1].split("Precision: ")[1].split("\n")[0])
+        recall_csls = float(log_str.split("Final test result with csls:\n\t")[-1].split("Recall: ")[1].split("\n")[0])
+    else:
+        f1_csls, precision_csls, recall_csls = None, None, None
 
     train_time_seconds = float(log_str.split("Training ends. Total time = ")[-1].split(" s.")[0])
     test_time_seconds = float(log_str.split("Total run time = ")[-1].split(" s.")[0]) - train_time_seconds
