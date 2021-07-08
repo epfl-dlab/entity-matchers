@@ -1,8 +1,8 @@
 name: entity_match
 channels:
   - pytorch
-  - anaconda
   - conda-forge
+  - anaconda
   - defaults
 dependencies:
   - _libgcc_mutex=0.1=main
@@ -157,4 +157,5 @@ dependencies:
     - werkzeug==1.0.1
     - wrapt==1.12.1
     - zipp==3.4.0
+prefix: /scratch/leone/anaconda3/envs/entity_match
 
