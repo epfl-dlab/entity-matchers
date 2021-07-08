@@ -133,7 +133,7 @@ Here is a short description of the datasets that you can find in the datasets zi
 ## Datasets sampling
 The source code to run the IDS* algorithm is provided under `SampKG-OpenEA` folder for your convenience. If you want to create samples of any pair of KGs, you need to follow these steps (after you activated the environment):
 
-1. Download the full datasets zip `full_kgs.zip` from **TO UPDATE**[https://zenodo.org/record/4540561#.YClg3nVKhhE	](https://zenodo.org/record/4540561#.YClg3nVKhhE) and uncompress it in a folder or your convenience. The zip contains a directory for each datasets (containing relation triples plus attribute triples) plus a directory containing the seed alignment between DBPedia and YAGO (`ent_links_dbpedia_yago`), betweehn DBPedia and Wikidata (`ent_links_dbpedia_wikidata`), and between English DBpedia and the other languages (`ent_links_en_lang`, where `lang` can be `fr`, `ja` or `de`).
+1. Locate the directory `full_kgs` under the downloaded `entity-matchers-dataset` zip. The folder contains a directory for each datasets (containing relation triples plus attribute triples) plus a directory (`alignment`) containing the seed alignment between DBpedia and YAGO (`ent_links_dbpedia_yago`), betweehn DBpedia and Wikidata (`ent_links_dbpedia_wikidata`), and between English DBpedia and the other languages (`ent_links_en_lang`, where `lang` can be `fr`, `ja` or `de`).
 2. Locate the file `strategy.py` under `SampKG-OpenEA/src/sampkg/generator` and add a new dictionary of the following format (the example reported is for the DBP_en_YG_en_100K dataset):
 ```
 SAMPLE_NAME = {
@@ -184,7 +184,7 @@ Where the parameters are:
 
 Finally, note that relation triples and attribute triples must follow the same format used among all of our datasets, i.e. `ENTITY TAB RELATION/PROPERTY TAB ENTITY/LITERAL` and the ground truth must be instead of the form `ENTITY1 TAB ENTITY2`(as it is for the datasets we provide).
 
-For example, a dataset similar to our DBP_en_YG_en_100K can be obtained with the command (supposing that the `full_kgs.zip` is decompressed inside `SampKG-OpenEA/sampkg/src` and a folder `output/` exists in the same directory). A `delete_param` of 2.5 will produce around 30% of non-matchable entities for this dataset.
+For example, a dataset similar to our DBP_en_YG_en_100K can be obtained with the command (supposing that the `full_kgs` folder is copied inside `SampKG-OpenEA/sampkg/src` and a folder `output/` exists in the same directory). A `delete_param` of 2.5 will produce around 30% of non-matchable entities for this dataset.
 ```
   python3 main.py \
       --target_dataset DBP_en_YG_en_100K \
