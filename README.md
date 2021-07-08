@@ -57,11 +57,11 @@ python3 -u ../run_experiment.py \
 Where the following commands should be substituted with:
   1. `METHOD`: `RDGCN`, `BOOTEA`, `BERT-INT`, `TRANSEDGE` or `PARIS`, according to the experiment you want to replicate
   2. `DATASET_ROOT`: path to the directory that contains the dataset you need. For example, assume you want to run the main
-  experiment on the DBP_en_YG_en_15K, and you have downloaded the datasets in your `~/Download` folder, then `DATASET_ROOT`
+  experiment on the DBP_en_YG_en_15K, and you have downloaded the datasets in your `~/Downloads` folder, then `DATASET_ROOT`
   should be: `~/Downloads/entity-matchers-dataset/RealEA` (note that there must be no final slash).
   3. `DATASET`: the name of the dataset, in the example above `DBP_en_YG_en_15K`.
   4. `DATASET_DIVISION`: the dataset division in folds, in our experiments `721_5folds` which stands for 70% test, 20% train, 10% validation, in 5 random folds (in order to repeat the same experiment 5 times, for robustness). The only time when you shall specify a different argument than 721_5folds is when runnign experiments with the `increasing_seed` dataset: in such case, it is enough to use as argument `631_5folds/SEED` where `SEED` is any among `1_seed`, `5_seed`, `10_seed`, `20_seed`, `30_seed`.
-  5. `OUT_FOLDER`: folder where you want to store the output of the approach (and the final alignments). We recommend you create an `output/`  folder in the root directory of the repository, and for every experiment you create its own subfolder (like `output/main/DBP_en_YG_en_15K` and so on).
+  5. `OUT_FOLDER`: folder where you want to store the output of the approach (and the final alignments). We recommend you create an `output/`  folder in the root directory of the repository, and for every experiment you create its own subfolder (like `output/RealEA/DBP_en_YG_en_15K` and so on).
   6. `GPU_ID`: (only for RDGCN, BootEA, BERT-INT, TransEdge) mention it only if you have more than one GPU on your machine (ids are integers starting from zero, check for them using the command `nvidia-smi`). If you are running PARIS, or if you have one or no GPU at all, do not use the argument `--gpu` in the first place. 
   7. `MAIN_FILE`: the main file for embeddings experiments: 
   - `../../OpenEA_Mod/run/main_from_args.py` for RDGCN and BootEA.
@@ -76,15 +76,15 @@ Finally, note that, when running RDGCN, it is necessary to specify the location 
 
 Just to give an example, assuming that we want to replicate the result of the paper's Table 3 for DB-YG-15K, then the following command will do the job:
 ```
-python3 -u run_experiment.py \
+python3 -u ../run_experiment.py \
         --method RDGCN \
-        --root_dataset ~/Downloads/datasets/main \
+        --root_dataset ~/Downloads/entity-matchers-dataset/RealEA \
         --dataset DBP_en_YG_en_15K \
         --dataset_division 721_5folds \
-        --out_folder output/main/RDGCN_DBP_YG_15K \
+        --out_folder output/RealEA/RDGCN_DBP_YG_15K \
         --gpu 0 \
-        --main_embeds ../OpenEA_Mod/run/main_from_args.py \
-        --args experiments/args_best/rdgcn_args_DBP_YG_15K.json > output/main/RDGCN_DBP_YG_15K/log_file.log 
+        --main_embeds ../../OpenEA_Mod/run/main_from_args.py \
+        --args args_best/rdgcn_args_DBP_YG_15K.json > output/RealEA/RDGCN_DBP_YG_15K/log_file.log 
 ``` 
 
 ## Datasets description
