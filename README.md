@@ -4,7 +4,7 @@ Source code for "A Critical Re-evaluation of Neural Methods for Entity Alignment
 
 ## Source code references
 The source code for the various techniques has been obtained from the corresponding repositories. The code is not 100% equal due to some modifications used to run all of them under the same settings. The repositories are:
-- [OpenEA](https://github.com/nju-websoft/OpenEA) for RDGCN and BootEA.
+- [OpenEA](https://github.com/nju-websoft/OpenEA) for RDGCN and BootEA. The authors also provided us the source code for their IDS algorithm, that we modified into our IDS* algorithm.
 - [BERT-INT](https://github.com/kosugi11037/bert-int) for BERT-INT.
 - [TransEdge](https://github.com/nju-websoft/TransEdge) for TransEdge.
 - [PARIS](http://webdam.inria.fr/paris/) for PARIS (you have to download the JAR).
