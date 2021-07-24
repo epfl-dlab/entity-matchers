@@ -32,8 +32,7 @@ In order to run the code, you need to do the following steps:
 
   5. Create an environment to run experiments with BERT-INT (you can't use the same environment as before due to version conflicts). The command we use to create such environment is `conda create --name bert-int python=3.6.9 pytorch==1.1.0 torchvision==0.3.0 cudatoolkit=10.0 transformers=2.1.1 numpy --channel conda-forge --channel pytorch`. Note that you must match the Python, Pytorch and Transformers versions (as the ones used by the authors), otherwise BERT-INT will not work. Watch out for the cudatoolkit version and install the correct one according to your CUDA version. Note that BERT-INT can't work without a GPU so you must have CUDA installed in your system.
   
-  6. Download the datasets: you can find them following the link **TO UPDATE**
-  [https://drive.google.com/drive/folders/1x-8OonL8SMDpNyfGyBmwzsgQL_zVMojx?usp=sharing](https://drive.google.com/drive/folders/1x-8OonL8SMDpNyfGyBmwzsgQL_zVMojx?usp=sharing). 
+  6. Download the datasets: you can find them following the link [https://drive.google.com/drive/folders/1x-8OonL8SMDpNyfGyBmwzsgQL_zVMojx?usp=sharing](https://drive.google.com/drive/folders/1x-8OonL8SMDpNyfGyBmwzsgQL_zVMojx?usp=sharing). 
   Extract the zip in any directory (you will need to provide the path to the datasets later).
   
   7. Download the word embeddings at the link https://dl.fbaipublicfiles.com/fasttext/vectors-english/wiki-news-300d-1M.vec.zip.
