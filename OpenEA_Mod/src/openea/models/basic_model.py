@@ -242,7 +242,9 @@ class BasicModel:
                                                         self.pos_ts: [x[2] for x in batch_pos],
                                                         self.neg_hs: [x[0] for x in batch_neg],
                                                         self.neg_rs: [x[1] for x in batch_neg],
-                                                        self.neg_ts: [x[2] for x in batch_neg]})
+                                                        self.neg_ts: [x[2] for x in batch_neg],
+                                                        self.pos_rs_func: [x[1] for x in batch_pos],
+                                                        self.neg_rs_func: [x[1] for x in batch_neg]})
             trained_samples_num += len(batch_pos)
             epoch_loss += batch_loss
         epoch_loss /= trained_samples_num

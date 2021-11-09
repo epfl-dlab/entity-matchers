@@ -39,7 +39,8 @@ def positive_loss(phs, prs, pts, loss_norm):
     return loss
 
 
-def limited_loss(phs, prs, pts, nhs, nrs, nts, pos_margin, neg_margin, loss_norm, balance=1.0):
+def limited_loss(phs, prs, pts, nhs, nrs, nts, pos_func, neg_func, pos_margin, neg_margin, loss_norm, use_func=False,
+                 balance=1.0):
     with tf.name_scope('limited_loss_distance'):
         # Compute triple distances ì, a vector of the form embedding_head + embedding_rel - embedding_tail
         # (both for positive and negative triples)
@@ -53,8 +54,12 @@ def limited_loss(phs, prs, pts, nhs, nrs, nts, pos_margin, neg_margin, loss_norm
             pos_score = tf.reduce_sum(tf.square(pos_distance), axis=1)
             neg_score = tf.reduce_sum(tf.square(neg_distance), axis=1)
         # See equation 3 from BootEA paper -> pos_margin = gamma_1, neg_margin = gamma_2, balance = mu_1
-        pos_loss = tf.reduce_sum(tf.nn.relu(pos_score - tf.constant(pos_margin)))
-        neg_loss = tf.reduce_sum(tf.nn.relu(tf.constant(neg_margin) - neg_score))
+        if use_func:
+            pos_loss = tf.reduce_sum(tf.nn.relu(pos_score - pos_func * tf.constant(pos_margin)))
+            neg_loss = tf.reduce_sum(tf.nn.relu(neg_func * tf.constant(neg_margin) - neg_score))
+        else:
+            pos_loss = tf.reduce_sum(tf.nn.relu(pos_score - tf.constant(pos_margin)))
+            neg_loss = tf.reduce_sum(tf.nn.relu(tf.constant(neg_margin) - neg_score))
         loss = tf.add(pos_loss, balance * neg_loss, name='limited_loss')
     return loss
 

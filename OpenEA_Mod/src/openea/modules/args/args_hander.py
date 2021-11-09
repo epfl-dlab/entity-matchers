@@ -6,6 +6,8 @@ def load_args(file_path):
         args_dict = json.load(f)
         f.close()
     print("load arguments:", args_dict)
+    if "use_func" not in args_dict:
+        args_dict["use_func"] = False
     args = ARGs(args_dict)
     return args
 

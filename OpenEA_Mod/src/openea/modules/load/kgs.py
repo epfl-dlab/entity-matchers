@@ -5,7 +5,7 @@ import random
 
 class KGs:
     def __init__(self, kg1: KG, kg2: KG, train_links, test_links, valid_links=None, mode='mapping',
-                 ordered=True, extra_entities_percentage_valid = 0.0):
+                 ordered=True, extra_entities_percentage_valid=0.0):
         # BootEA: swapping (swap entities to generate extra triples), RDGCN: mapping (calibration?? -> min ||e_1-e_2||)
         if mode == "sharing":
             ent_ids1, ent_ids2 = generate_sharing_id(train_links, kg1.relation_triples_set, kg1.entities_set,
@@ -37,11 +37,20 @@ class KGs:
         self.map_ent_to_id_1 = ent_ids1
         self.map_ent_to_id_2 = ent_ids2
 
+        # Compute functionalities shared
+        # rel_func_shared_original = compute_functionalities(list(kg1.relation_triples_set) + list(kg2.relation_triples_set))
+        # self.rel_func1 = func_to_id(rel_func_shared_original, rel_ids1)
+        # self.rel_func2 = func_to_id(rel_func_shared_original, rel_ids2)
+
         # rebuild kgs using ids, add dict generated before
         kg1 = KG(id_relation_triples1, id_attribute_triples1)
         kg2 = KG(id_relation_triples2, id_attribute_triples2)
         kg1.set_id_dict(ent_ids1, rel_ids1, attr_ids1)
         kg2.set_id_dict(ent_ids2, rel_ids2, attr_ids2)
+
+        # Compute functionalities over ids
+        self.rel_func1 = compute_functionalities(id_relation_triples1)
+        self.rel_func2 = compute_functionalities(id_relation_triples2)
 
         self.uri_train_links = train_links
         self.uri_test_links = test_links
@@ -88,9 +97,9 @@ class KGs:
         self.extra_entities1 = list(self.kg1.entities_set - set(self.useful_entities_list1))
         self.extra_entities2 = list(self.kg2.entities_set - set(self.useful_entities_list2))
         self.extra_entities_valid1 = random.sample(self.extra_entities1,
-                                                   int(len(self.extra_entities1)*extra_entities_percentage_valid))
+                                                   int(len(self.extra_entities1) * extra_entities_percentage_valid))
         self.extra_entities_valid2 = random.sample(self.extra_entities2,
-                                                   int(len(self.extra_entities2)*extra_entities_percentage_valid))
+                                                   int(len(self.extra_entities2) * extra_entities_percentage_valid))
         self.extra_entities_test1 = list(set(self.extra_entities1) - set(self.extra_entities_valid1))
         self.extra_entities_test2 = list(set(self.extra_entities2) - set(self.extra_entities_valid2))
 
@@ -123,7 +132,8 @@ def read_kgs_from_folder(training_data_folder, division, mode, ordered,
     # Read all relation triples and attribute triples from the folder
     kg1_relation_triples, _, _ = read_relation_triples(training_data_folder + 'rel_triples_1')  # get only set (h,r,t)
     kg2_relation_triples, _, _ = read_relation_triples(training_data_folder + 'rel_triples_2')
-    kg1_attribute_triples, _, _ = read_attribute_triples(training_data_folder + 'attr_triples_1')  # get only set (e,p,lit)
+    kg1_attribute_triples, _, _ = read_attribute_triples(
+        training_data_folder + 'attr_triples_1')  # get only set (e,p,lit)
     kg2_attribute_triples, _, _ = read_attribute_triples(training_data_folder + 'attr_triples_2')
 
     # Read the ground truth from the split we're using (20% train, 70% test, 10% valid)
@@ -249,3 +259,27 @@ def remove_unlinked_triples(triples, links):
             linked_triples.add((h, r, t))
     print("after removing unlinked triples:", len(linked_triples))
     return linked_triples
+
+
+def compute_functionalities(rel) -> dict:
+    rel_types = set([r for (_, r, _) in rel])
+    func = {}
+    for r in rel_types:
+        func[r] = functionality(r, rel)
+    return func
+
+
+def functionality(relation, triples) -> float:
+    """
+    Given a relation and the list of triples, return the functionality of such relation.
+    """
+    numerator = len(set([h for (h, r, t) in triples if r == relation]))
+    denominator = len(set([(h, t) for (h, r, t) in triples if r == relation]))
+    return numerator / denominator
+
+
+def func_to_id(rel_func_shared_original, rel_ids) -> dict:
+    func = {}
+    for (r, i) in rel_ids.items():
+        func[i] = rel_func_shared_original[r]
+    return func

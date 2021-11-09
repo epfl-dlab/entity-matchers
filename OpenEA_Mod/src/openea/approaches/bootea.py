@@ -167,6 +167,11 @@ def mul(tensor1, tensor2, session, num, sigmoid):
     print("mat mul costs: {:.3f}".format(time.time() - t))
     return res
 
+def format_func(rel_func: dict):
+    rel_ids = list(rel_func.keys())
+    func_vals = list(rel_func.values())
+    return rel_ids, func_vals
+
 
 class BootEA(AlignE):
 
@@ -174,8 +179,15 @@ class BootEA(AlignE):
         super().__init__()
         self.ref_ent1 = None
         self.ref_ent2 = None
+        self.rel_ids, self.func_val = [], []
 
     def init(self):
+        # Get functionalities in the format required by TF
+        rel_ids1, func_val1 = format_func(self.kgs.rel_func1)
+        rel_ids2, func_val2 = format_func(self.kgs.rel_func2)
+        self.rel_ids = rel_ids1 + rel_ids2
+        self.func_val = func_val1 + func_val2
+
         # Defined in AlignE
         self._define_variables()
         self._define_embed_graph()
@@ -185,6 +197,7 @@ class BootEA(AlignE):
         # Same as AlignE
         self.session = load_session(self.args.gpu)
         tf.global_variables_initializer().run(session=self.session)
+        tf.tables_initializer().run(session=self.session)
         # Test shouldn't be here, we let BootEA overfits the datasets as the original authors does
         # THIS IS COMPLETELY WRONG, however we let BootEA having this big advantage and still performing worse
         # MAYBE IT'S NOT SO WRONG

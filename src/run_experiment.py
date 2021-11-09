@@ -54,7 +54,7 @@ def run_paris_experiment(root_dataset, dataset, dataset_division, out_folder):
 
 
 def run_embedding_experiment(root_dataset, args, out_folder, dataset, dataset_division,
-                             gpu, method, main_embeds, dict_path):
+                             gpu, method, main_embeds, dict_path, use_func):
     precisions_no_csls = []
     precisions_csls = []
     recalls_no_csls = []
@@ -82,6 +82,9 @@ def run_embedding_experiment(root_dataset, args, out_folder, dataset, dataset_di
 
             json_data['training_data'] = root_dataset + '/'
             json_data['output'] = out_folder + '/'
+
+            if method == "BOOTEA" and use_func:
+                json_data["use_func"] = True
 
             # Re-write the json with the correct information
             with open(args, 'w') as outfile:
@@ -152,13 +155,13 @@ def run_embedding_experiment(root_dataset, args, out_folder, dataset, dataset_di
     print("Test times:\n\tavg: {}\n\tstd: {}".format(list_test_times.mean(), list_test_times.std()))
 
 
-def run_exps(method, args, root_dataset, dataset, dataset_division, gpu, out_folder, main_embeds, dict_path):
+def run_exps(method, args, root_dataset, dataset, dataset_division, gpu, out_folder, main_embeds, dict_path, use_func):
     if method == "PARIS":
         run_paris_experiment(root_dataset, dataset, dataset_division, out_folder)
 
     elif method in ["RDGCN", "BOOTEA", "TRANSEDGE", "BERT-INT"]:
         run_embedding_experiment(root_dataset, args, out_folder, dataset, dataset_division, gpu,
-                                 method, main_embeds, dict_path)
+                                 method, main_embeds, dict_path, use_func)
 
 
 if __name__ == "__main__":
@@ -174,6 +177,8 @@ if __name__ == "__main__":
     parser.add_argument("--main_embeds", type=str, help="Path to main script for embeddings method")
     parser.add_argument("--dict_path", type=str, help="Path to the dict containing the abstracts (only for BERT-INT)",
                         default=None)
+    parser.add_argument("--use_func", dest='use_func', action='store_true',
+                        help="Use this flag to run BootEA with functionality", default=False)
     args = parser.parse_args()
     run_exps(args.method, args.args, args.root_dataset, args.dataset,
-             args.dataset_division, args.gpu, args.out_folder, args.main_embeds, args.dict_path)
+             args.dataset_division, args.gpu, args.out_folder, args.main_embeds, args.dict_path, args.use_func)
