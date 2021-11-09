@@ -51,7 +51,8 @@ python3 -u ../run_experiment.py \
         --gpu GPU_ID \
         --main_embeds MAIN_FILE \
         --dict_path DESC_FILE \
-        --args ARGUMENTS_FILE > LOG_FILE.log 
+        --args ARGUMENTS_FILE 
+        --use_func > LOG_FILE.log 
 ```
 Where the following commands should be substituted with:
   1. `METHOD`: `RDGCN`, `BOOTEA`, `BERT-INT`, `TRANSEDGE` or `PARIS`, according to the experiment you want to replicate
@@ -69,7 +70,8 @@ Where the following commands should be substituted with:
   If you are running PARIS do not use the argument `--main_embeds`.
   8. `DESC_FILE`: only needed for the BERT-INT experiments with crosslingual datasets. You can find the file with the descriptions where you downloaded the datasets, under `Descriptions/BERT_INT_DESC.pkl`.
   9. `ARGUMENTS_FILE`: useful only if you are running BootEA, RDGCN, BERT-INT or TransEdge, use the correct hyper parameter file that you can find under `/src/experiments/args_best`. If you are running PARIS, do not use this argument.
-  10. `LOG_FILE.log`: file where the output will be written. At the end of the log file you will find the F1-score of the run.
+  10. `use_func`: Use this flag if you want to run the modified version of BootEA that use the relation functionalities to compute the alignment loss. If you don't specifiy the flag the classic BootEA will be run
+  11. `LOG_FILE.log`: file where the output will be written. At the end of the log file you will find the F1-score of the run.
 
 Finally, note that, when running RDGCN, it is necessary to specify the location of the word embeddings file  (`wiki-news-300d-1M.vec`): in order to do so, open the directory `src/experiments/args_best`, modify the `rdgcn_args_*.json` files putting the absolute path of the word embeddings as param `word_embeds`.
 
