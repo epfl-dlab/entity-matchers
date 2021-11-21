@@ -8,6 +8,7 @@ The source code for the various techniques has been obtained from the correspond
 - [BERT-INT](https://github.com/kosugi11037/bert-int) for BERT-INT.
 - [TransEdge](https://github.com/nju-websoft/TransEdge) for TransEdge.
 - [PARIS](http://webdam.inria.fr/paris/) for PARIS (you have to download the JAR).
+- [DeepMatcher](https://github.com/anhaidgroup/deepmatcher) for DeepMatcher.
 
 ## Installation process
 In order to run the code, you need to do the following steps: 
@@ -31,11 +32,11 @@ In order to run the code, you need to do the following steps:
   4. Install the OpenEA package: cd in `OpenEA_Mod/` and type the command `pip install -e .`. 
 
   5. Create an environment to run experiments with BERT-INT (you can't use the same environment as before due to version conflicts). The command we use to create such environment is `conda create --name bert-int python=3.6.9 pytorch==1.1.0 torchvision==0.3.0 cudatoolkit=10.0 transformers=2.1.1 numpy --channel conda-forge --channel pytorch`. Note that you must match the Python, Pytorch and Transformers versions (as the ones used by the authors), otherwise BERT-INT will not work. Watch out for the cudatoolkit version and install the correct one according to your CUDA version. Note that BERT-INT can't work without a GPU so you must have CUDA installed in your system.
-  
-  6. Download the datasets: you can find them following the link [https://drive.google.com/drive/folders/1x-8OonL8SMDpNyfGyBmwzsgQL_zVMojx?usp=sharing](https://drive.google.com/drive/folders/1x-8OonL8SMDpNyfGyBmwzsgQL_zVMojx?usp=sharing). 
+  6. Create an environment to run experiments with DeepMatcher. It is important that you install the package not from PyPI, but from the source code contained in the directory `/deepmatcher`. Hence, after having created the environment, cd to the directory `/deepmatcher` and type `python setup.py install`.
+  7. Download the datasets: you can find them following the link [https://drive.google.com/drive/folders/1x-8OonL8SMDpNyfGyBmwzsgQL_zVMojx?usp=sharing](https://drive.google.com/drive/folders/1x-8OonL8SMDpNyfGyBmwzsgQL_zVMojx?usp=sharing). 
   Extract the zip in any directory (you will need to provide the path to the datasets later).
   
-  7. Download the word embeddings at the link https://dl.fbaipublicfiles.com/fasttext/vectors-english/wiki-news-300d-1M.vec.zip.
+  8. Download the word embeddings at the link https://dl.fbaipublicfiles.com/fasttext/vectors-english/wiki-news-300d-1M.vec.zip.
   Unzip them and put them in any directory (you will need to provide the path to the .vec file as well).
 
 ## Reproduction of results
@@ -87,6 +88,17 @@ python3 -u ../run_experiment.py \
         --main_embeds ../../OpenEA_Mod/run/main_from_args.py \
         --args args_best/rdgcn_args_DBP_YG_15K.json > output/RealEA/RDGCN_DBP_YG_15K/log_file.log 
 ``` 
+
+To reproduce experiments of DeepMatcher, simply cd to the folder `/deepmatcher`, and launch the script `scripts/run_deepmacther.sh` with the folliwing command:
+
+```
+./scripts/run_deepmatcher.sh {logs_folder} {original_dataset_folder} {deepmatcher_dataset_folder}
+```
+
+where the arguments are:
+- `{logs_folder}`: folder where you want to keep the output of the run (with precision, recall and F1-score). Notice, in such folder 5 new sub-directories will be created: `EN-DE-15K`, `EN-FR-15K`, `EN-JA-15K`, `DB-WD-15K`, `DB-YG-15K`, and in each of the sub-folders you will have the output of the 5 folds for that dataset.
+- {original_dataset_folder}: folder where the dataset have been downloaded. If you downloaded them under the directory `Downloads`, then they will be under  `~/Downloads/entity-matchers-datasets`.
+- {deepmatcher_dataset_folder}: folder where the dataset with deepmatcher format are kept. If you downloaded the datasets under the directory `Downloads`, they will be under the directory `~/Downloads/entity-matchers-datasets/deepmatcher`.
 
 ## Datasets description
 Here is a short description of the datasets that you can find in the datasets zip:
