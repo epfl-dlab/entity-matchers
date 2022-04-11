@@ -59,7 +59,7 @@ class TransEdge_EA:
         self.early = False
         self.out_path = out_path
 
-        if gpu is not None:
+        if gpu is not None and gpu != "CPU":
             print("running on gpu", gpu)
             gpu_options = tf.compat.v1.GPUOptions(visible_device_list=gpu, allow_growth=True)
             self.session = tf.compat.v1.Session(config=tf.ConfigProto(gpu_options=gpu_options))
