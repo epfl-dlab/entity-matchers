@@ -138,7 +138,7 @@ Here is a short description of the datasets that you can find in the datasets zi
 - `AttRealEA_None` are the ones you need to reproduce AttRealEA with total absence of attributes.
 - `SupRealEA` are used to reproduce SupRealEA (Figure 3). Note that such datasets have a slight different structure.
 - `XRealEA` is the experiment with crosslingual datasets of Table 3 (Point d).
-- `XRealEA_Translated` is used to reproduce the crosslingual experiments only for RDGCN, which needs the datasets to be translated. Note this does not happen for the `XRealEA_Pure`.
+- `XRealEA_Translated` contains the translated version of the cross-lingual datasets
 - `XRealEA_Pure` is the experiment with pure crosslingual datasets of Table 3 (Point d).
 - `SpaRealEA` to reproduce the experiment with the sparse dataset (present in the appendix https://www.dropbox.com/s/97g87odnxqpyz6m/EA_ReEval_full.pdf?dl=0).
 - `Descriptions` contains the DBpedia abstracts used as BERT-INT descriptions (as explained in the reproduction section).
