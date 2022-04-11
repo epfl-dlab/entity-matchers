@@ -21,7 +21,7 @@ import os
 import pandas as pd
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Run one experiment with a given dataset")
+    parser = argparse.ArgumentParser(description="Reproduce results in Table 5-c")
     parser.add_argument("--root_dataset", type=str,
                         help="Path to the root folder containing the downloaded datasets (no slash)")
     parser.add_argument("--gpu", type=str, help="GPU id to use (if present)")
