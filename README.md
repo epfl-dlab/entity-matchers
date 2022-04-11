@@ -22,7 +22,7 @@ In order to run the code, you need to do the following steps:
   
   3. Create a virtual environment with Anaconda, and install the dependencies 
   (we have already created a yml file with all the necessary dependencies). 
-  If you do not have a GPU on your machine, then it is necessary for you change the line 151 of
+  If you do not have a GPU on your machine, then it is necessary for you change the line 184 of
   the file `entity_match.yml`, and substitute `tensorflow-gpu==1.15.0` with `tensorflow==1.15.0`. 
   After you have done, just run `conda env create --file entity_match.yml --name entity_match`. 
   If you prefer another name for the virtual environment, just change `entity_match` with your 
