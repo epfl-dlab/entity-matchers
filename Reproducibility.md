@@ -19,3 +19,10 @@ Table 5 can be reproduced by using the following scripts:
 For all this scripts, you need to provide:
 - "root_dataset": Path to the root of the datasets folder (without slash in the end), i.e. where you decompressed the downloaded zip
 - "gpu" (Optional): GPU id to use, if not provided the CPU will be used
+
+## Reproducing Figure 2
+Figure 2 can be reproduced using the following script: [create_figure_2.py](https://github.com/epfl-dlab/entity-matchers/blob/master/src/experiments/create_figure_2.py)
+
+You need to provide:
+- "root_dataset": Path to the root of the datasets folder (without slash in the end), i.e. where you decompressed the downloaded zip
+- "gpu" (Optional): GPU id to use, if not provided the CPU will be used
