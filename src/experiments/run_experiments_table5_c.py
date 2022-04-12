@@ -81,7 +81,7 @@ if __name__ == "__main__":
                 else:
                     main_embeds = "../../bert-int/run_full_bert.py"
                 command = f"{conda_command} python3 -u ../run_experiment.py \
-                            --method {method} \
+                            --method {method if 'BERT-INT' not in method else 'BERT-INT'} \
                             --root_dataset {root_dataset} \
                             --dataset {dataset} \
                             --dataset_division 721_5folds \
