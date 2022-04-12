@@ -106,38 +106,81 @@ where the arguments are:
 - {deepmatcher_dataset_folder}: folder where the dataset with deepmatcher format are kept. If you downloaded the datasets under the directory `Downloads`, they will be under the directory `~/Downloads/entity-matchers-datasets/deepmatcher`.
 
 ## Datasets description
-### NOTE: Need to update the figure
 Here is a short description of the datasets that you can find in the datasets zip:
 
 ```
 ├── RealEA
-│   ├── DBP_en_WD_en_100K
-│   ├── DBP_en_WD_en_15K
-│   ├── DBP_en_YG_en_100K
-│   └── DBP_en_YG_en_15K
+│   ├── DB-WD-15K
+│   ├── DB-WD-100K
+│   ├── DB-WD-500K
+│   ├── DB-YG-15K
+│   ├── DB-YG-100K
+│   └── DB-YG-500K
+├── RealEA_NoObfs
+│   ├── DB-WD-15K-NoObfs
+│   └── DB-YG-15K-NoObfs
 ├── AttRealEA_All
-│   ├── DBP_en_WD_en_15K
-│   └── DBP_en_YG_en_15K
+│   ├── DB-WD-15K
+│   └── DB-YG-15K
 ├── AllRealEA_None
-│   ├── DBP_en_WD_en_15K
-│   ├── DBP_en_YG_en_15K
+│   ├── DB-WD-15K
+│   └── DB-YG-15K
+├── AllRealEA_NoNames
+│   ├── DB-WD-15K
+│   └── DB-YG-15K
 ├── SupRealEA
-│   ├── DBP_en_WD_en_15K
-│   └── DBP_en_YG_en_15K
+|   ├── RealEA
+|   │   ├── DB-WD-15K
+|   │   └── DB-YG-15K
+|   ├── AttRealEA_All
+|   │   ├── DB-WD-15K
+|   │   └── DB-YG-15K
+|   ├── AllRealEA_None
+|   │   ├── DB-WD-15K
+|   │   └── DB-YG-15K
+|   └── AllRealEA_NoNames
+|       ├── DB-WD-15K
+|       └── DB-YG-15K
+├── SupRealEA_New
+│   ├── DB-WD-100K
+│   └── DB-YG-100K
 ├── XRealEA
-│   ├── EN_FR_15K
-│   ├── EN_DE_15K
-│   └── EN_JA_15K
+│   ├── EN-FR-15K
+│   ├── EN-DE-15K
+│   └── EN-JA-15K
 ├── XRealEA_Translated
-│   ├── EN_FR_15K
-│   ├── EN_DE_15K
-│   └── EN_JA_15K
+│   ├── EN-FR-15K
+│   ├── EN-DE-15K
+│   └── EN-JA-15K
 ├── XRealEA_Pure
 │   └── EN_JA_15K
 ├── SpaRealEA
-│   └── DBP_en_YG_en_15K
-└── Descriptions
-    └── BERT_INT_DESC.pkl
+|   ├── RealEA
+|   │   └── DB-WD-15K
+|   ├── AttRealEA_All
+|   │   └── DB-WD-15K
+|   ├── AllRealEA_None
+|   │   └── DB-WD-15K
+|   └── AllRealEA_NoNames
+|       └── DB-WD-15K
+├── OpenEA  
+│   ├── DB-WD-15K
+│   ├── DB-WD-100K
+│   ├── DB-YG-15K
+│   └── DB-YG-100K
+├── Descriptions  
+│   ├── desc_EN_DE_15K.pkl
+│   ├── desc_EN_FR_15K.pkl
+│   ├── desc_EN_JA_15K.pkl
+│   └── desc_EN_JA_15K_TRUE_XLING.pkl
+└── full_kgs
+    ├── alignment
+    ├── dbpedia
+    ├── dbpedia_de
+    ├── dbpedia_fr
+    ├── dbpedia_ja
+    ├── wikidata
+    └── yago3.1
 ```
 - `RealEA` datasets are the ones you need to reproduce the results of Table 5 (RealEA - point b). 
 - `RealEA_NoObfs` contains the non-anonymized version of RealEA datasets.
