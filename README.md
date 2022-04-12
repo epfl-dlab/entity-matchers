@@ -143,10 +143,11 @@ Here is a short description of the datasets that you can find in the datasets zi
 - `RealEA_NoObfs` contains the non-anonymized version of RealEA datasets.
 - `AttRealEA_All` are used to reproduce the results of AttRealEA of Table 5, with more attributes (Point d).
 - `AttRealEA_None` are the ones you need to reproduce AttRealEA of Table 5, with total absence of attributes (Point d).
+- `AttRealEA_NoNames` contains an ablation or RealEA where whe removed all the "names" attribute (Not used in the final version of the paper).
 - `SupRealEA` are used to reproduce SupRealEA (Appendix). Note that such datasets have a slight different structure.
 - `SupRealEA_New` are used to reproduce the experiment with different amount of supervision (Figure 2).
 - `XRealEA` is the experiment with crosslingual datasets of Table 5 (Point c).
-- `XRealEA_Translated` contains the translated version of the cross-lingual datasets (not used, but left there if you want to play around).
+- `XRealEA_Translated` contains the translated version of the cross-lingual datasets (Not used in the final version of the paper, but left there if you want to play around).
 - `XRealEA_Pure` is the experiment with pure crosslingual datasets of Table 5 (Point c).
 - `SpaRealEA` to reproduce the experiment with the sparse dataset (Appendix).
 - `OpenEA` contains the used datasets from the OpenEA library, used to reproduce results of Table 5 (point a).
