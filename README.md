@@ -40,6 +40,8 @@ In order to run the code, you need to do the following steps:
   Unzip them and put them in any directory (you will need to provide the path to the .vec file as well).
 
 ## Reproduction of results
+#### Note: If you want to reproduce any of the Tables/Figures in the paper you can refer to [Reproducibility Notes](https://github.com/epfl-dlab/entity-matchers/blob/master/Reproducibility.md). What's written below is more useful if you want to run single experiments.
+
 In order to run any of the experiments, cd in `/src/experiments`, activate the correct virtual environment (`bert-int` for BERT-INT experiments and `entity-match` for all the others) and run the following command:
 
 ```
