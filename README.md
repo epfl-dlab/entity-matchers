@@ -11,6 +11,7 @@ The source code for the various techniques has been obtained from the correspond
 - [DeepMatcher](https://github.com/anhaidgroup/deepmatcher) for DeepMatcher.
 
 ## Installation process
+### NOTE: THE DATASET LINK MUST BE UPDATED
 In order to run the code, you need to do the following steps: 
   1. Clone the repository using the command `git clone https://github.com/epfl-dlab/entity-matchers.git` 
   and `cd` in it: `cd entity-matchers`.
@@ -42,7 +43,7 @@ In order to run the code, you need to do the following steps:
 ## Reproduction of results
 #### Note: If you want to reproduce any of the Tables/Figures in the paper you can refer to [Reproducibility Notes](https://github.com/epfl-dlab/entity-matchers/blob/master/Reproducibility.md). What's written below is more useful if you want to run single experiments.
 
-In order to run any of the experiments, cd in `/src/experiments`, activate the correct virtual environment (`bert-int` for BERT-INT experiments and `entity-match` for all the others) and run the following command:
+In order to run any of the experiments, cd in `/src/experiments`, activate the correct virtual environment (`bert-int` for BERT-INT experiments and `entity_match` for all the others) and run the following command:
 
 ```
 python3 -u ../run_experiment.py \
@@ -62,28 +63,30 @@ Where the following commands should be substituted with:
   2. `DATASET_ROOT`: path to the directory that contains the dataset you need. For example, assume you want to run the main
   experiment on the DBP_en_YG_en_15K, and you have downloaded the datasets in your `~/Downloads` folder, then `DATASET_ROOT`
   should be: `~/Downloads/entity-matchers-dataset/RealEA` (note that there must be no final slash).
-  3. `DATASET`: the name of the dataset, in the example above `DBP_en_YG_en_15K`.
-  4. `DATASET_DIVISION`: the dataset division in folds, in our experiments `721_5folds` which stands for 70% test, 20% train, 10% validation, in 5 random folds (in order to repeat the same experiment 5 times, for robustness). The only time when you shall specify a different argument than 721_5folds is when runnign experiments with the `increasing_seed` dataset: in such case, it is enough to use as argument `631_5folds/SEED` where `SEED` is any among `1_seed`, `5_seed`, `10_seed`, `20_seed`, `30_seed`.
-  5. `OUT_FOLDER`: folder where you want to store the output of the approach (and the final alignments). We recommend you create an `output/`  folder in the root directory of the repository, and for every experiment you create its own subfolder (like `output/RealEA/DBP_en_YG_en_15K` and so on).
-  6. `GPU_ID`: (only for RDGCN, BootEA, BERT-INT, TransEdge) mention it only if you have more than one GPU on your machine (ids are integers starting from zero, check for them using the command `nvidia-smi`). If you are running PARIS, or if you have one or no GPU at all, do not use the argument `--gpu` in the first place. 
+  3. `DATASET`: the name of the dataset, in the example below `DB-YG-15K`.
+  4. `DATASET_DIVISION`: the dataset division in folds, in our experiments `721_5folds` which stands for 70% test, 20% train, 10% validation, in 5 random folds (in order to repeat the same experiment 5 times, for robustness). The only time when you shall specify a different argument than 721_5folds is when running experiments with the `SupRealEA` or `SupRealEA_New` datasets. in such case:
+  - Use `631_5folds/SEED` where `SEED` is among `1_seed`, `5_seed`, `10_seed`, `20_seed`, `30_seed` for `SupRealEA`
+  - Use `0_18_91_1folds/SEED` where `SEED` is among `0_seed`, `1_seed`, `25_seed`, `50_seed`, `75_seed`, `89_seed` for `SupRealEA_New`
+  5. `OUT_FOLDER`: folder where you want to store the output of the approach (and the final alignments). We recommend you create an `output/`  folder in the root directory of the repository, and for every experiment you create its own subfolder (like `output/RealEA/DB-YG-15K` and so on).
+  6. `GPU_ID`: (only for RDGCN, BootEA, BERT-INT, TransEdge) mention it only if you one GPU on your machine (ids are integers starting from zero, check for them using the command `nvidia-smi`). If you are running PARIS, or if you have one or no GPU at all, do not use the argument `--gpu` in the first place. 
   7. `MAIN_FILE`: the main file for embeddings experiments: 
   - `../../OpenEA_Mod/run/main_from_args.py` for RDGCN and BootEA.
   - `../../bert-int/run_full_bert.py` for BERT-INT.
   - `../../TransEdge/code/transedge_ea.py` for TransEdge.  
   If you are running PARIS do not use the argument `--main_embeds`.
-  8. `DESC_FILE`: only needed for the BERT-INT experiments with crosslingual datasets. You can find the file with the descriptions where you downloaded the datasets, under `Descriptions/BERT_INT_DESC.pkl`.
+  8. `DESC_FILE`: only needed for the BERT-INT experiments with crosslingual datasets. You can find the file with the descriptions where you downloaded the datasets, under `Descriptions/desc_{dataset}.pkl`.
   9. `ARGUMENTS_FILE`: useful only if you are running BootEA, RDGCN, BERT-INT or TransEdge, use the correct hyper parameter file that you can find under `/src/experiments/args_best`. If you are running PARIS, do not use this argument.
   10. `use_func`: Use this flag if you want to run the modified version of BootEA that use the relation functionalities to compute the alignment loss. If you don't specifiy the flag the classic BootEA will be run
   11. `LOG_FILE.log`: file where the output will be written. At the end of the log file you will find the F1-score of the run.
 
 Finally, note that, when running RDGCN, it is necessary to specify the location of the word embeddings file  (`wiki-news-300d-1M.vec`): in order to do so, open the directory `src/experiments/args_best`, modify the `rdgcn_args_*.json` files putting the absolute path of the word embeddings as param `word_embeds`.
 
-Just to give an example, assuming that we want to replicate the result of the paper's Table 3 for DB-YG-15K, then the following command will do the job:
+Just to give an example, assuming that we want to replicate the result of the paper's Table 5 for DB-YG-15K, then the following command will do the job:
 ```
 python3 -u ../run_experiment.py \
         --method RDGCN \
         --root_dataset ~/Downloads/entity-matchers-dataset/RealEA \
-        --dataset DBP_en_YG_en_15K \
+        --dataset DB-YG-15K \
         --dataset_division 721_5folds \
         --out_folder output/RealEA/RDGCN_DBP_YG_15K \
         --gpu 0 \
@@ -103,6 +106,7 @@ where the arguments are:
 - {deepmatcher_dataset_folder}: folder where the dataset with deepmatcher format are kept. If you downloaded the datasets under the directory `Downloads`, they will be under the directory `~/Downloads/entity-matchers-datasets/deepmatcher`.
 
 ## Datasets description
+### NOTE: Need to update the figure
 Here is a short description of the datasets that you can find in the datasets zip:
 
 ```
@@ -135,15 +139,19 @@ Here is a short description of the datasets that you can find in the datasets zi
 └── Descriptions
     └── BERT_INT_DESC.pkl
 ```
-- `RealEA` datasets are the ones you need to reproduce the results of Table 3 (RealEA). 
-- `AttRealEA_All` are used to reproduce the results of AttRealEA of Table 3, with more attributes.
-- `AttRealEA_None` are the ones you need to reproduce AttRealEA with total absence of attributes.
-- `SupRealEA` are used to reproduce SupRealEA (Figure 3). Note that such datasets have a slight different structure.
-- `XRealEA` is the experiment with crosslingual datasets of Table 3 (Point d).
-- `XRealEA_Translated` contains the translated version of the cross-lingual datasets
-- `XRealEA_Pure` is the experiment with pure crosslingual datasets of Table 3 (Point d).
-- `SpaRealEA` to reproduce the experiment with the sparse dataset (present in the appendix https://www.dropbox.com/s/97g87odnxqpyz6m/EA_ReEval_full.pdf?dl=0).
+- `RealEA` datasets are the ones you need to reproduce the results of Table 5 (RealEA - point b). 
+- `RealEA_NoObfs` contains the non-anonymized version of RealEA datasets.
+- `AttRealEA_All` are used to reproduce the results of AttRealEA of Table 5, with more attributes (Point d).
+- `AttRealEA_None` are the ones you need to reproduce AttRealEA of Table 5, with total absence of attributes (Point d).
+- `SupRealEA` are used to reproduce SupRealEA (Appendix). Note that such datasets have a slight different structure.
+- `SupRealEA_New` are used to reproduce the experiment with different amount of supervision (Figure 2).
+- `XRealEA` is the experiment with crosslingual datasets of Table 5 (Point c).
+- `XRealEA_Translated` contains the translated version of the cross-lingual datasets (not used, but left there if you want to play around).
+- `XRealEA_Pure` is the experiment with pure crosslingual datasets of Table 5 (Point c).
+- `SpaRealEA` to reproduce the experiment with the sparse dataset (Appendix).
+- `OpenEA` contains the used datasets from the OpenEA library, used to reproduce results of Table 5 (point a).
 - `Descriptions` contains the DBpedia abstracts used as BERT-INT descriptions (as explained in the reproduction section).
+- `full_kgs` contains the original KGs from DBPedia, YAGO and the XLingual. You can use these datasets to create your own samples with our IDS* algorithm.
 
 ## Datasets sampling
 The source code to run the IDS* algorithm is provided under `SampKG-OpenEA` folder for your convenience. If you want to create samples of any pair of KGs, you need to follow these steps (after you activated the environment):
@@ -199,7 +207,7 @@ Where the parameters are:
 
 Finally, note that relation triples and attribute triples must follow the same format used among all of our datasets, i.e. `ENTITY TAB RELATION/PROPERTY TAB ENTITY/LITERAL` and the ground truth must be instead of the form `ENTITY1 TAB ENTITY2`(as it is for the datasets we provide).
 
-For example, a dataset similar to our DBP_en_YG_en_100K can be obtained with the command (supposing that the `full_kgs` folder is copied inside `SampKG-OpenEA/sampkg/src` and a folder `output/` exists in the same directory). A `delete_param` of 2.5 will produce around 30% of non-matchable entities for this dataset.
+For example, a dataset similar to our DBP-YG-100K can be obtained with the command (supposing that the `full_kgs` folder is copied inside `SampKG-OpenEA/sampkg/src` and a folder `output/` exists in the same directory). A `delete_param` of 2.5 will produce around 30% of non-matchable entities for this dataset.
 ```
   python3 main.py \
       --target_dataset DBP_en_YG_en_100K \
