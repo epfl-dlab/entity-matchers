@@ -81,7 +81,7 @@ if __name__ == "__main__":
                 else:
                     main_embeds = "../../bert-int/run_full_bert.py"
                 if dataset == "EN-JA-15K-PURE":
-                    dataset_desc = "EN_JA_15K"
+                    dataset_desc = "EN_JA_15K_TRUE_XLING"
                 else:
                     dataset_desc = dataset.replace("-", "_")
                 desc_flag = f"--dict_path {root_dataset}/Descriptions/desc_{dataset_desc}.pkl" if method == "BERT-INT-DESC" else ""
