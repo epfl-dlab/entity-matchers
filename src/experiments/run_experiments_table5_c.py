@@ -80,6 +80,11 @@ if __name__ == "__main__":
                     main_embeds = "../../TransEdge/code/transedge_ea.py"
                 else:
                     main_embeds = "../../bert-int/run_full_bert.py"
+                if dataset == "EN-JA-15K-PURE":
+                    dataset_desc = "EN_JA_15K"
+                else:
+                    dataset_desc = dataset.replace("-", "_")
+                desc_flag = f"--dict_path {root_dataset}/Descriptions/desc_{dataset_desc}.pkl" if method == "BERT-INT-DESC" else ""
                 command = f"{conda_command} python3 -u ../run_experiment.py \
                             --method {method if 'BERT-INT' not in method else 'BERT-INT'} \
                             --root_dataset {root_dataset} \
@@ -88,7 +93,7 @@ if __name__ == "__main__":
                             --out_folder {output_dir_log_fold_method} \
                             --gpu {gpu} \
                             --main_embeds {main_embeds} \
-                            --args {arg_map[method][dataset]} > {output_dir_log_exp_method_dataset}"
+                            --args {arg_map[method][dataset]} {desc_flag} > {output_dir_log_exp_method_dataset}"
                 os.system(command)
                 with open(output_dir_log_exp_method_dataset) as f:
                     log_data = f.read()
