@@ -265,3 +265,118 @@ For example, a dataset similar to our DBP-YG-100K can be obtained with the comma
       --pre_delete 0 \
       --output_folder output/
 ```
+
+## Instructions on usage of Elasticsearch blocking
+
+Both entity alignments methods (Deepmatcher and Ditto) need the data to be provided in blocked format: this means that the train-test-valid splits contain pairs of entities (e1, e2, l) where e1 and e2 are entities belonging to the first and second knowledge graphs, and l is the label (1 -> the pair is correct, 0 the pair is wrong).
+
+Of course, the correct way of performing such blocking would be to provide all possible pairs of entities. Unfortunately, this is not possible due to the high number of entities in both knowledge graphs: the total number of pairs is |E1| * |E2|, where |E1| and |E2| are the number of entities of the knowledge graphs. When |E1| and |E2| are in the order of 10^5, as in the large datasets of our experiments, this number becomes too large.
+
+Hence, we need blocking in order to shrink the number of generated pairs in training and testing: in particular, using blocking, it is possible to select for every entity e1 in E1 only the top-`k` most similar entities e2 in E2, for a small constant `k`. In this way, the total number of entities is upper bounded by O((E1 + E2) * k), which is now reasonable even for large E1 and E2.
+
+The technique employed in order to perform blocking is using string similarity techniques, made on the most significant attributes of all entities.
+
+The string similarity algorithm is provided by the search engine [ElasticSearch](https://www.elastic.co/).
+
+The full pipeline used to create the blocked datasets is this:
+
+### Create tableA, tableB in EntityMatching format
+
+First, we assume that we already have the datasets for entity alignment: these are the ones used for all entity alignments experiments (PARIS, BootEA, RDGCN, BERT-INT). Deepmatcher needs the datasets in this format: 
+```
+.
+├ tableA.csv
+└ tableB.csv
+```
+where tableA.csv and tableB.csv are two csv's with one entry for every entity.
+In particular, every entity `e` will have 5 columns:
+- `id`: id of the entity
+- `names`: concatenation of all attributes recognized as "names" of `e`, namely the most informative attributes. For a full list of names for every dataset, check the file `deepmatcher/notebooks/create_dataset_deepmatchers.py`
+- `other_attributes`: concatenation of every other attribute which is not recognized as a name fo `e`.
+- `one_hop_names`: concatenation of names of the entities that have at least one relation with `e`.
+- `one_hop_other_attributes`: concatenation of other attributes of the entities that have at least one relation with `e`.
+- `relations`: concatenation of relation names, where `e` is one of the two entpoints.
+
+Notice that numbers are removed from the attribute strings, since they generally don't introduce much information.
+
+Example command for creating the DB-WD-500K dataset:
+```
+python create_dataset_deepmatchers.py \
+  --input_dataset_folder .../DBP_en_WD_en_500K_NO_EXTRA_ANON \
+  --output_dataset_folder .../deepmatcher/RealEA/NO-SUM/DB-YG-500K \
+```
+
+Notice that the thresholds parameters are not used at all. The NO-SUM folder is useful to differentiate it from the summarized versions.
+
+### Convert to Ditto
+
+Datasets in Deepmatcher format needs to be converted also for Ditto format (instead of a CSV file, Ditto wants file formatted as COL ... VAL ...).
+
+This is done using the file `deepmatcher/notebooks/convert_to_ditto.py` like the following
+
+```
+time python convert_to_ditto.py \
+  --input_dataset_folder .../deepmatcher/RealEA/NO-SUM/DB-WD-500K \
+  --output_dataset_folder .../ditto/RealEA/NO-SUM/DB-WD-500K
+```
+
+### Summarize dataset
+
+Ditto pipeline provides a primitive to perform the summarization (namely, remove very common words like "as", "like", "the" and so on).
+
+
+### Convert back to Deepmatcher format
+
+Do the inverse operation than the conversion to Ditto: from Ditto format, we convert back into the deepmatcher format which is easier to handle since it is a simpler csv: an example of the conversion of the DB-WD-500K summarized dataset is:
+
+```
+python convert_ditto_sum_table_a_b_to_deepmatcher.py \
+  --input_dataset_folder .../ditto/RealEA/NO-SUM/DB-WD-500K \
+  --output_dataset_folder .../deepmatcher/RealEA/SUM-V2/DB-WD-500K
+```
+
+### Block with Elasticsearch
+
+Finally, we can now use Elasticsearch to perform blocking: for every entity e1 in KG1, we select the top `k` (50) most similar entities (neighbors) in KG2 and viceversa.
+
+An example is:
+
+```
+time python block_with_elasticsearch.py \
+  --dataframe_folder .../deepmatcher/RealEA/SUM-V2/DB-WD-500K \
+  --out_folder .../blocked_pairs/RealEA/DB-WD-500K-SUM-V2 \
+  --ground_truth_file .../DBP_en_WD_en_500K_NO_EXTRA_ANON/ent_links \
+  --topk 50
+```
+
+Blocking is made using 2 and 3 grams, only using the `name` and `other_attribute` columns which we found out to be more significant (using also the one_hop attributes, in fact, introduced more noise) and capping the query string length to 300 characters for time purpose (and also because ElasticSearch complains when the string is too long).
+
+This procedure creates two pickle files: `matches_a_to_b.pkl` matches by id every entity in the first KG to the top-k most similar entities in the second KG. The other file is the opposite.
+Moreover, a `stats.csv` file is created in the same folder, which records the precision and recall for various `k` values.
+
+It is clear that the higher the `k`, the higher the recall (since it is more likely to select the correct pairs), but the lower the precision and the higher the noise. We decided to use `k = 5`, since it is the best compromise in terms of small dataset size and high recall.
+
+### Create the dataset in Deepmatcher format
+
+Now that we have the pairs blocked, we can convert them into the deepmatcher format, so that pairs of entities appear with the 1/0 label, meaning that the pair is indeed correct or wrong. This is done using `create_dataset_deepmatcher_with_topk_elasticsearch.py`, like in the example below for DB-WD-500K
+
+```
+python create_dataset_deepmatcher_with_topk_elasticsearch.py \
+  --dataset_original .../DBP_en_WD_en_500K_NO_EXTRA_ANON \
+  --dataset_deepmatcher .../deepmatcher/RealEA/SUM-V2/DB-WD-500K \
+  --elastic_search_blocked_pairs_folder .../blocked_pairs/RealEA/DB-WD-500K-SUM-V2 \
+  --out_dataset .../deepmatcher/RealEA/SUM-V2/DB-WD-500K
+```
+
+### Finally convert to Ditto
+
+Once the files of blocked pairs of entities are created, we need to convert such files also to Ditto format. This is done by 
+```
+time python convert_to_ditto.py \
+  --input_dataset_folder .../deepmatcher/RealEA/SUM-V2/DB-YG-500K-5NEIGH \
+  --output_dataset_folder .../ditto/RealEA/SUM-V2/DB-YG-500K-5NEIGH
+```
+
+Notice that the command is the same as the one above, but using the datasets contained in the summarized folders.
+
+
