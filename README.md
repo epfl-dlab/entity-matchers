@@ -173,6 +173,31 @@ Here is a short description of the datasets that you can find in the datasets zi
 │   ├── desc_EN_FR_15K.pkl
 │   ├── desc_EN_JA_15K.pkl
 │   └── desc_EN_JA_15K_TRUE_XLING.pkl
+├── EntityMatching  
+│   ├── ditto
+│   │   ├── RealEA
+│   │   │   ├── DB-WD-15K
+│   │   │   ├── DB-YG-15K
+│   │   │   ├── DB-WD-100K
+│   │   │   ├── DB-YG-100K
+│   │   │   ├── DB-WD-500K
+│   │   │   └── DB-YG-500K
+│   │   └── XRealEA
+│   │       ├── EN-DE-15K
+│   │       ├── EN-FR-15K
+│   │       └── EN-JA-15K   
+│   └── deepmatcher
+│       ├── RealEA
+│       │   ├── DB-WD-15K
+│       │   ├── DB-YG-15K
+│       │   ├── DB-WD-100K
+│       │   ├── DB-YG-100K
+│       │   ├── DB-WD-500K
+│       │   └── DB-YG-500K
+│       └── XRealEA
+│           ├── EN-DE-15K
+│           ├── EN-FR-15K
+│           └── EN-JA-15K
 └── full_kgs
     ├── alignment
     ├── dbpedia
@@ -195,6 +220,7 @@ Here is a short description of the datasets that you can find in the datasets zi
 - `SpaRealEA` to reproduce the experiment with the sparse dataset (Appendix).
 - `OpenEA` contains the used datasets from the OpenEA library, used to reproduce results of Table 5 (point a).
 - `Descriptions` contains the DBpedia abstracts used as BERT-INT descriptions (as explained in the reproduction section).
+- `EntityMatching` contains the same datasets as in `RealEA` and `XRealEA`, but in `deepmatcher` and `ditto` format. Datasets were created with the pipeline described in the section `Elasticsearch blocking`.
 - `full_kgs` contains the original KGs from DBPedia, YAGO and the XLingual. You can use these datasets to create your own samples with our IDS* algorithm.
 
 ## Datasets sampling
@@ -266,9 +292,9 @@ For example, a dataset similar to our DBP-YG-100K can be obtained with the comma
       --output_folder output/
 ```
 
-## Instructions on usage of Elasticsearch blocking
+## Elasticsearch blocking
 
-Both entity alignments methods (Deepmatcher and Ditto) need the data to be provided in blocked format: this means that the train-test-valid splits contain pairs of entities (e1, e2, l) where e1 and e2 are entities belonging to the first and second knowledge graphs, and l is the label (1 -> the pair is correct, 0 the pair is wrong).
+Both entity matching methods (Deepmatcher and Ditto) need the data to be provided in blocked format: this means that the train-test-valid splits contain pairs of entities (e1, e2, l) where e1 and e2 are entities belonging to the first and second knowledge graphs, and l is the label (1 -> the pair is correct, 0 the pair is wrong).
 
 Of course, the correct way of performing such blocking would be to provide all possible pairs of entities. Unfortunately, this is not possible due to the high number of entities in both knowledge graphs: the total number of pairs is |E1| * |E2|, where |E1| and |E2| are the number of entities of the knowledge graphs. When |E1| and |E2| are in the order of 10^5, as in the large datasets of our experiments, this number becomes too large.
 
@@ -378,5 +404,3 @@ time python convert_to_ditto.py \
 ```
 
 Notice that the command is the same as the one above, but using the datasets contained in the summarized folders.
-
-
